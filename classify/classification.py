@@ -1,6 +1,8 @@
 import csv
 from collections import namedtuple
 
+from classify.rules import RULES_VALIDATORS
+
 # TODO - organize rule book  based on types for faster access to the relevant rules
 #  (e.g. communication_protocol only cares about argument)
 
@@ -9,11 +11,6 @@ Communication = namedtuple('Communication', ['id', 'timestamp', 'device_id', 'pr
 Classification = namedtuple('Classification', ['device_id', 'classification'])
 
 UNKNOWN_CLASSIFICATION = 'unknown'
-
-RULES_VALIDATORS = {
-    'communicating_protocol': lambda rule, communication: rule.argument == communication.protocol_name,
-    'communicating_with': lambda rule, communication: rule.argument == communication.host
-}
 
 
 def _parse_rule(row):

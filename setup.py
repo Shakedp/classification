@@ -7,7 +7,7 @@ setup(
     packages=['classify'],
     include_package_data=True,
     python_requires=">=3.9.*",
-    install_requires=[],
+    install_requires=['netaddr'],
     tests_require=['pytest'],
     entry_points={
         'console_scripts': ['classify=classify.main:main'],
