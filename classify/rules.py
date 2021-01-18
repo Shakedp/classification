@@ -2,7 +2,7 @@ from netaddr import IPNetwork, IPAddress
 import robtex_python as robtex
 
 
-def _communicating_with_domain(rule, communication):
+def _communicating_with_domain(rule, communication, **kwargs):
     """
     Using the robtex project to query Internet data - current and stored.
     @note: Ideally we would like to navigate to both domain and IP and see that the output is the same, or even using
@@ -31,9 +31,28 @@ def _communicating_with_domain(rule, communication):
     return False
 
 
+def _multi_rules(rule, communication, **kwargs):
+    if 'applying_rules' not in kwargs:
+        return False
+
+    applying_rules = kwargs['applying_rules']
+    combined_rule_ids = rule.argument.split('-')
+
+    all_device_ids_in_intersection = applying_rules[combined_rule_ids[0]]
+    for rule_id in combined_rule_ids[1:]:
+        if rule_id in applying_rules:
+            all_device_ids_in_intersection = all_device_ids_in_intersection.intersection(applying_rules[rule_id])
+
+    if communication.device_id in all_device_ids_in_intersection:
+        return True
+    return False
+
+
 RULES_VALIDATORS = {
-    'communicating_protocol': lambda rule, communication: rule.argument == communication.protocol_name,
-    'communicating_with': lambda rule, communication: rule.argument == communication.host,
-    'communicating_with_subnet': lambda rule, communication: IPAddress(communication.host) in IPNetwork(rule.argument),
-    'communicating_with_domain': _communicating_with_domain
+    'communicating_protocol': lambda rule, communication, **kwargs: rule.argument == communication.protocol_name,
+    'communicating_with': lambda rule, communication, **kwargs: rule.argument == communication.host,
+    'communicating_with_subnet': lambda rule, communication, **kwargs: IPAddress(communication.host) in IPNetwork(
+        rule.argument),
+    'communicating_with_domain': _communicating_with_domain,
+    'multi_rules': _multi_rules
 }

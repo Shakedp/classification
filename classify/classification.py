@@ -31,23 +31,26 @@ def read_rules(classification_rules_path):
     return rules
 
 
-def classify(rules, communication):
+def classify(rules, communication, applying_rules):
     classification = Classification(communication.device_id, UNKNOWN_CLASSIFICATION)
     for rule in rules:
-        if rule.type in RULES_VALIDATORS and RULES_VALIDATORS[rule.type](rule, communication):
-            classification = Classification(communication.device_id, rule.classification)
+        if rule.type in RULES_VALIDATORS and RULES_VALIDATORS[rule.type](rule, communication, applying_rules=applying_rules):
             # We don't break if we find the correct one because we want the last rule that applies
+            classification = Classification(communication.device_id, rule.classification)
+            applying_rules[rule.id] = applying_rules.get(rule.id, set())
+            applying_rules[rule.id].add(communication.device_id)
 
     return classification
 
 
 def classify_files(classification_rules_path, communications_path):
     classifications = {}
+    applying_rules = {}
     rules = read_rules(classification_rules_path)
     with open(communications_path, 'r') as communications_file:
         csv_reader = csv.reader(communications_file)
         for row in csv_reader:
-            classification = classify(rules, _parse_communication(row))
+            classification = classify(rules, _parse_communication(row), applying_rules)
             classifications[classification.device_id] = classification.classification
             # We want to update according to the latest device_id we classified
 
