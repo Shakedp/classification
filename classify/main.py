@@ -1,9 +1,22 @@
 #!/usr/bin/env python3
+import csv
 import sys
+import io
+
+from classify.classification import classify_files, read_rules
 
 
-def classify_files(classification_rules_path, communications_path):
-    pass
+def write_classifications_csv(classifications):
+    with io.StringIO() as output:
+        csv_writer = csv.writer(output)
+        for id, (device_id, classification) in enumerate(classifications.items(), 1):
+            csv_writer.writerow([id, device_id, classification])
+
+        return output.getvalue()
+
+
+def get_classification_as_csv(classification_rules_path, communications_path):
+    return write_classifications_csv(classify_files(classification_rules_path, communications_path))
 
 
 def main():
@@ -13,9 +26,7 @@ def main():
 
     classification_rules_path = sys.argv[1]
     communications_path = sys.argv[2]
-    classifications = classify_files(classification_rules_path, communications_path)
-
-    print(classifications)
+    print(get_classification_as_csv(classification_rules_path, communications_path))
 
 
 if __name__ == '__main__':
