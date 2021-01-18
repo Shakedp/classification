@@ -1,0 +1,3 @@
+1,communicating_protocol,http,user endpoint
+1,communicating_with,10.2.1.1,ct
+1,communicating_with_subnet,10.1.1.0/24,qq
