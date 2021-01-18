@@ -11,7 +11,8 @@ Classification = namedtuple('Classification', ['device_id', 'classification'])
 UNKNOWN_CLASSIFICATION = 'unknown'
 
 RULES_VALIDATORS = {
-    'communicating_protocol': lambda rule, communication: rule.argument == communication.protocol_name
+    'communicating_protocol': lambda rule, communication: rule.argument == communication.protocol_name,
+    'communicating_with': lambda rule, communication: rule.argument == communication.host
 }
 
 
